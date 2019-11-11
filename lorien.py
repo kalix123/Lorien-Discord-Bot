@@ -1,11 +1,13 @@
 # import Music
 # import Simpleton
-
+import json
 import discord
 import youtube_dl
 from async_timeout import timeout
 from discord.ext import commands
 
+with open('config.json') as conffile:
+    config = json.load(conffile)
 
 bot = commands.Bot('-', description='Yet another music bot.')
 
@@ -25,11 +27,9 @@ async def on_member_join(member):
     await member.add_roles(role)
     await channel.send(f"Hello {member.mention}. Welcome to **People Things**! Enjoy your stay and be sure to read #rules before introducing yourself in #meet-and-greet")
 
-# @bot.event
-# async def on_message():
-#     if me
+
 @bot.event
 async def on_ready():
     print('Logged in as:\n{0.user.name}\n{0.user.id}'.format(bot))
 
-bot.run('NjQyNDUyNzQ5ODYyMDQzNjUz.Xcix5g.EEvemrtG5b8Cs-NjP4k2pXEy-Sk')
+bot.run(config["bot_key"])
