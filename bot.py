@@ -9,7 +9,7 @@ from discord.ext import commands
 with open('config.json') as conffile:
     config = json.load(conffile)
 
-bot = commands.Bot('-', description='Yet another music bot.')
+bot = commands.Bot('-', description='Lorien is god of all things')
 
 STARTUP_EXTENSIONS = ['cogs.Music','cogs.Admin']
 
