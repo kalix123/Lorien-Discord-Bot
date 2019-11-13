@@ -28,6 +28,12 @@ import youtube_dl
 from async_timeout import timeout
 from discord.ext import commands
 
+
+
+
+discord.opus.load_opus()
+if not discord.opus.is_loaded():
+    raise RunTimeError('Opus failed to load')
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
 
