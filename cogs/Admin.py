@@ -3,9 +3,6 @@ from async_timeout import timeout
 from discord.ext import commands
 import os
 
-if not discord.opus.is_loaded():
-    discord.opus.load_opus()
-
 class Admin(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
