@@ -1,6 +1,7 @@
 import discord
 from async_timeout import timeout
 from discord.ext import commands
+import os
 
 
 class Admin(commands.Cog):
@@ -17,6 +18,8 @@ class Admin(commands.Cog):
             mgs.append(x)
         await ctx.message.channel.delete_messages(mgs)
         await ctx.send(f"I deleted {number} messages in this channel",delete_after=4)
+
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))

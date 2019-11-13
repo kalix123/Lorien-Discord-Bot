@@ -1,6 +1,7 @@
 # import Music
 # import Simpleton
 import json
+import os
 import discord
 import youtube_dl
 from async_timeout import timeout
@@ -11,14 +12,19 @@ with open('config.json') as conffile:
 
 bot = commands.Bot('-', description='Lorien is god of all things')
 
-STARTUP_EXTENSIONS = ['cogs.Music','cogs.Admin']
+STARTUP_EXTENSIONS = []
+
+for file in os.listdir(os.path.join(os.path.dirname(__file__), 'cogs/')):
+    filename, ext = os.path.splitext(file)
+    if '.py' in ext:
+        STARTUP_EXTENSIONS.append(f'cogs.{filename}')
 
 for cog in STARTUP_EXTENSIONS:
     try:
         bot.load_extension(cog)
         print(cog + " loaded")
-    except:
-        print("there was an error loading " + cog)
+    except Exception as e:
+        print(e)
 
 @bot.event
 async def on_member_join(member):
