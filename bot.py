@@ -7,11 +7,6 @@ import youtube_dl
 from async_timeout import timeout
 from discord.ext import commands
 
-# 
-# if not discord.opus.is_loaded():
-#     discord.opus.load_opus('')
-#
-
 with open('config.json') as conffile:
     config = json.load(conffile)
 
