@@ -11,6 +11,9 @@ with open('config.json') as conffile:
     config = json.load(conffile)
 
 bot = commands.Bot('-', description='Lorien is god of all things')
+welcome_channel = bot.get_channel(642518190626177024)
+rules_channel = bot.get_channel(642528338287656990)
+meet_channel = bot.get_channel(643342309899108352)
 
 STARTUP_EXTENSIONS = []
 
@@ -28,10 +31,9 @@ for cog in STARTUP_EXTENSIONS:
 
 @bot.event
 async def on_member_join(member):
-    channel = bot.get_channel(642518190626177024)
     role = discord.utils.get(member.guild.roles, name="person")
     await member.add_roles(role)
-    await channel.send(f"Hello {member.mention}. Welcome to **People Things**! Enjoy your stay and be sure to read #rules before introducing yourself in #meet-and-greet")
+    await welcome_channel.send(f"Hello {member.mention}. Welcome to **People Things**! Enjoy your stay and be sure to read {rules_channel.mention} before introducing yourself in {meet_channel.mention}")
 
 
 @bot.event
