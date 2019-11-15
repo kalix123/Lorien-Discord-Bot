@@ -7,7 +7,7 @@ class Admin(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name='clear', pass_context = True)
+    @commands.command(name='clear', pass_context = True, hidden=True)
     @commands.has_permissions(manage_guild=True)
     async def clear(self, ctx, number):
         """An admin command for deleteing lots of messages"""
