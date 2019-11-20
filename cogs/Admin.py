@@ -1,11 +1,16 @@
 import discord
+import asyncio
+
 from async_timeout import timeout
 from discord.ext import commands
 import os
 
+
 class Admin(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.my_task = self.bot.loop.create_task(self.bump_server())
+
 
     @commands.command(name='clear', pass_context = True, hidden=True)
     @commands.has_permissions(manage_guild=True)
@@ -17,11 +22,13 @@ class Admin(commands.Cog):
             mgs.append(x)
         await ctx.message.channel.delete_messages(mgs)
         await ctx.send(f"I deleted {number} messages in this channel",delete_after=4)
-    # 
-    # async def bump_server(self,ctx):
-    #     channel_t = ctx.message.get
-    #     await asyncio.sleep(10)
-    #     ctx.send("!d bump")
+
+    async def bump_server(self):
+        # await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            await asyncio.sleep(7200)
+            await self.bot.get_channel(643274898478989344).send("!d bump")
+        await asyncio.sleep(1)
 
 
 def setup(bot):
