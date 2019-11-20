@@ -9,7 +9,7 @@ import os
 class Admin(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.my_task = self.bot.loop.create_task(self.bump_server())
+        # self.my_task = self.bot.loop.create_task(self.bump_server())
 
 
     @commands.command(name='clear', pass_context = True, hidden=True)
@@ -23,11 +23,11 @@ class Admin(commands.Cog):
         await ctx.message.channel.delete_messages(mgs)
         await ctx.send(f"I deleted {number} messages in this channel",delete_after=4)
 
-    async def bump_server(self):
-        # await self.bot.wait_until_ready()
-        while not self.bot.is_closed():
-            await asyncio.sleep(3)
-            await self.bot.get_channel(643274898478989344).send("!d bump")
+    # async def bump_server(self):
+    #     # await self.bot.wait_until_ready()
+    #     while not self.bot.is_closed():
+    #         await asyncio.sleep(3)
+    #         await self.bot.get_channel(643274898478989344).send("!d bump")
 
 
 def setup(bot):
