@@ -26,11 +26,12 @@ class Admin(commands.Cog):
     async def bump_server(self):
         # await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            await asyncio.sleep(7200)
             user = self.bot.get_user(187677490452496394)
-            # user_2 = self.bot.get_user(369266266906689538)
+            user_2 = self.bot.get_user(369266266906689538)
             await user.send('SEND THE  BUMP COMMAND ON THE **PEOPLE THINGS** SEVER')
-            # await user2.send('this is a reminder that you can do the \`!d bump\` command on the people things discord server.')
+            await user2.send('this is a reminder that you can do the \`!d bump\` command on the people things discord server.')
+            await asyncio.sleep(7200)
+
     def cog_unload(self):
         self.my_task.cancel()
 
