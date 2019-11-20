@@ -21,7 +21,7 @@ import functools
 import itertools
 import math
 import random
-
+import random
 
 import discord
 import youtube_dl
@@ -32,7 +32,7 @@ from discord.ext import commands
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
 
-yt_links = open('yt_links.txt','r').read().splitlines()
+yt_links = open('cogs/yt_links.txt','r').read().splitlines()
 
 class VoiceError(Exception):
     pass
@@ -158,16 +158,16 @@ class Song:
         self.source = source
         self.requester = source.requester
 
-    # def create_embed(self):
-    #     embed = (discord.Embed(title='Now playing',
-    #                            description='```css\n{0.source.title}\n```'.format(self),
-    #                            color=discord.Color.blurple())
-    #              .add_field(name='Duration', value=self.source.duration)
-    #              .add_field(name='Requested by', value=self.requester.mention)
-    #              .add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
-    #              .add_field(name='URL', value='[Click]({0.source.url})'.format(self))
-    #              .set_thumbnail(url=self.source.thumbnail))
-    #     return embed
+    def create_embed(self):
+        embed = (discord.Embed(title='Now playing',
+                               description='```css\n{0.source.title}\n```'.format(self),
+                               color=discord.Color.blurple())
+                 .add_field(name='Duration', value=self.source.duration)
+                 .add_field(name='Requested by', value=self.requester.mention)
+                 .add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
+                 .add_field(name='URL', value='[Click]({0.source.url})'.format(self))
+                 .set_thumbnail(url=self.source.thumbnail))
+        return embed
 
 
 class SongQueue(asyncio.Queue):
@@ -246,7 +246,7 @@ class VoiceState:
 
             self.current.source.volume = self._volume
             self.voice.play(self.current.source, after=self.play_next_song)
-            # await self.current.source.channel.send(embed=self.current.create_embed())
+            await self.current.source.channel.send(embed=self.current.create_embed())
 
             await self.next.wait()
 
@@ -339,42 +339,42 @@ class Music(commands.Cog):
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
 
-    # @commands.command(name='volume')
-    # async def _volume(self, ctx: commands.Context, *, volume: int):
-    #     """Sets the volume of the player."""
-    #
-    #     if not ctx.voice_state.is_playing:
-    #         return await ctx.send('Nothing being played at the moment.')
-    #
-    #     if 0 > volume > 100:
-    #         return await ctx.send('Volume must be between 0 and 100')
-    #
-    #     ctx.voice_state.volume = volume / 100
-    #     await ctx.send('Volume of the player set to {}%'.format(volume))
+    @commands.command(name='volume')
+    async def _volume(self, ctx: commands.Context, *, volume: int):
+        """Sets the volume of the player."""
 
-    # @commands.command(name='now', aliases=['current', 'playing'])
-    # async def _now(self, ctx: commands.Context):
-    #     """Displays the currently playing song."""
-    #
-    #     await ctx.send(embed=ctx.voice_state.current.create_embed())
-    #
-    # @commands.command(name='pause')
-    # @commands.has_permissions(manage_guild=True)
-    # async def _pause(self, ctx: commands.Context):
-    #     """Pauses the currently playing song."""
-    #
-    #     if ctx.voice_state.is_playing and ctx.voice_state.voice.is_playing():
-    #         ctx.voice_state.voice.pause()
-    #         await ctx.send('Paused')
+        if not ctx.voice_state.is_playing:
+            return await ctx.send('Nothing being played at the moment.')
 
-    # @commands.command(name='resume')
-    # @commands.has_permissions(manage_guild=True)
-    # async def _resume(self, ctx: commands.Context):
-    #     """Resumes a currently paused song."""
-    #
-    #     if ctx.voice_state.voice.is_paused():
-    #         ctx.voice_state.voice.resume()
-    #         await ctx.send("Resuming")
+        if 0 > volume > 100:
+            return await ctx.send('Volume must be between 0 and 100')
+
+        ctx.voice_state.volume = volume / 100
+        await ctx.send('Volume of the player set to {}%'.format(volume))
+
+    @commands.command(name='now', aliases=['current', 'playing'])
+    async def _now(self, ctx: commands.Context):
+        """Displays the currently playing song."""
+
+        await ctx.send(embed=ctx.voice_state.current.create_embed())
+
+    @commands.command(name='pause')
+    @commands.has_permissions(manage_guild=True)
+    async def _pause(self, ctx: commands.Context):
+        """Pauses the currently playing song."""
+
+        if ctx.voice_state.is_playing and ctx.voice_state.voice.is_playing():
+            ctx.voice_state.voice.pause()
+            await ctx.send('Paused')
+
+    @commands.command(name='resume')
+    @commands.has_permissions(manage_guild=True)
+    async def _resume(self, ctx: commands.Context):
+        """Resumes a currently paused song."""
+
+        if ctx.voice_state.voice.is_paused():
+            ctx.voice_state.voice.resume()
+            await ctx.send("Resuming")
 
     @commands.command(name='stop')
     @commands.has_permissions(manage_guild=True)
@@ -408,10 +408,9 @@ class Music(commands.Cog):
         for i, song in enumerate(ctx.voice_state.songs[start:end], start=start):
             queue += '`{0}.` [**{1.source.title}**]({1.source.url})\n'.format(i + 1, song)
 
-        # embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(ctx.voice_state.songs), queue))
-                 # .set_footer(text='Viewing page {}/{}'.format(page, pages)))
-        # await ctx.send(embed=embed)
-        await ctx.send([x for x in queue])
+        embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(ctx.voice_state.songs), queue))
+                 .set_footer(text='Viewing page {}/{}'.format(page, pages)))
+        await ctx.send(embed=embed)
 
 
     @commands.command(name='remove')
@@ -440,8 +439,10 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             try:
-                this_song = str(random.choice(yt_links))
-                source = await YTDLSource.create_source(ctx, this_song, loop=self.bot.loop)
+                search = str(random.choice(yt_links))
+
+                print(search)
+                source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
 
             except YTDLError as e:
                 await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
