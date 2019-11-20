@@ -26,9 +26,8 @@ class Admin(commands.Cog):
     async def bump_server(self):
         # await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            await asyncio.sleep(7200)
+            await asyncio.sleep(3)
             await self.bot.get_channel(643274898478989344).send("!d bump")
-        await asyncio.sleep(1)
 
 
 def setup(bot):
