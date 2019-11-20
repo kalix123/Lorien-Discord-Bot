@@ -32,6 +32,7 @@ from discord.ext import commands
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
 
+yt_links = open('yt_links.txt','r').read().splitlines()
 
 class VoiceError(Exception):
     pass
@@ -186,9 +187,6 @@ class SongQueue(asyncio.Queue):
     def clear(self):
         self._queue.clear()
 
-    def shuffle(self):
-        random.shuffle(self._queue)
-
     def remove(self, index: int):
         del self._queue[index]
 
@@ -205,7 +203,6 @@ class VoiceState:
 
         self._loop = False
         self._volume = 0.5
-        self.skip_votes = set()
 
         self.audio_player = bot.loop.create_task(self.audio_player_task())
 
@@ -343,42 +340,42 @@ class Music(commands.Cog):
         await ctx.voice_state.stop()
         del self.voice_states[ctx.guild.id]
 
-    @commands.command(name='volume')
-    async def _volume(self, ctx: commands.Context, *, volume: int):
-        """Sets the volume of the player."""
+    # @commands.command(name='volume')
+    # async def _volume(self, ctx: commands.Context, *, volume: int):
+    #     """Sets the volume of the player."""
+    #
+    #     if not ctx.voice_state.is_playing:
+    #         return await ctx.send('Nothing being played at the moment.')
+    #
+    #     if 0 > volume > 100:
+    #         return await ctx.send('Volume must be between 0 and 100')
+    #
+    #     ctx.voice_state.volume = volume / 100
+    #     await ctx.send('Volume of the player set to {}%'.format(volume))
 
-        if not ctx.voice_state.is_playing:
-            return await ctx.send('Nothing being played at the moment.')
+    # @commands.command(name='now', aliases=['current', 'playing'])
+    # async def _now(self, ctx: commands.Context):
+    #     """Displays the currently playing song."""
+    #
+    #     await ctx.send(embed=ctx.voice_state.current.create_embed())
+    #
+    # @commands.command(name='pause')
+    # @commands.has_permissions(manage_guild=True)
+    # async def _pause(self, ctx: commands.Context):
+    #     """Pauses the currently playing song."""
+    #
+    #     if ctx.voice_state.is_playing and ctx.voice_state.voice.is_playing():
+    #         ctx.voice_state.voice.pause()
+    #         await ctx.send('Paused')
 
-        if 0 > volume > 100:
-            return await ctx.send('Volume must be between 0 and 100')
-
-        ctx.voice_state.volume = volume / 100
-        await ctx.send('Volume of the player set to {}%'.format(volume))
-
-    @commands.command(name='now', aliases=['current', 'playing'])
-    async def _now(self, ctx: commands.Context):
-        """Displays the currently playing song."""
-
-        await ctx.send(embed=ctx.voice_state.current.create_embed())
-
-    @commands.command(name='pause')
-    @commands.has_permissions(manage_guild=True)
-    async def _pause(self, ctx: commands.Context):
-        """Pauses the currently playing song."""
-
-        if ctx.voice_state.is_playing and ctx.voice_state.voice.is_playing():
-            ctx.voice_state.voice.pause()
-            await ctx.send('Paused')
-
-    @commands.command(name='resume')
-    @commands.has_permissions(manage_guild=True)
-    async def _resume(self, ctx: commands.Context):
-        """Resumes a currently paused song."""
-
-        if ctx.voice_state.voice.is_paused():
-            ctx.voice_state.voice.resume()
-            await ctx.send("Resuming")
+    # @commands.command(name='resume')
+    # @commands.has_permissions(manage_guild=True)
+    # async def _resume(self, ctx: commands.Context):
+    #     """Resumes a currently paused song."""
+    #
+    #     if ctx.voice_state.voice.is_paused():
+    #         ctx.voice_state.voice.resume()
+    #         await ctx.send("Resuming")
 
     @commands.command(name='stop')
     @commands.has_permissions(manage_guild=True)
@@ -391,18 +388,6 @@ class Music(commands.Cog):
             ctx.voice_state.voice.stop()
             await ctx.send('Stopping')
 
-    @commands.command(name='skip')
-    @commands.has_permissions(manage_guild=True)
-    async def _skip(self, ctx: commands.Context):
-        """Vote to skip a song. The requester can automatically skip.
-        3 skip votes are needed for the song to be skipped.
-        """
-
-        if ctx.voice_state.is_playing == False:
-            return await ctx.send('Not playing any music right now...')
-        else:
-            ctx.voice_state.skip()
-            await ctx.send('Skipping this song!')
 
     @commands.command(name='queue')
     async def _queue(self, ctx: commands.Context, *, page: int = 1):
@@ -428,15 +413,6 @@ class Music(commands.Cog):
                  .set_footer(text='Viewing page {}/{}'.format(page, pages)))
         await ctx.send(embed=embed)
 
-    @commands.command(name='shuffle')
-    async def _shuffle(self, ctx: commands.Context):
-        """Shuffles the queue."""
-
-        if len(ctx.voice_state.songs) == 0:
-            return await ctx.send('Empty queue.')
-
-        ctx.voice_state.songs.shuffle()
-        await ctx.message.add_reaction('✅')
 
     @commands.command(name='remove')
     async def _remove(self, ctx: commands.Context, index: int):
@@ -448,22 +424,8 @@ class Music(commands.Cog):
         ctx.voice_state.songs.remove(index - 1)
         await ctx.message.add_reaction('✅')
 
-    @commands.command(name='loop')
-    async def _loop(self, ctx: commands.Context):
-        """Loops the currently playing song.
-
-        Invoke this command again to unloop the song.
-        """
-
-        if not ctx.voice_state.is_playing:
-            return await ctx.send('Nothing being played at the moment.')
-
-        # Inverse boolean value to loop and unloop.
-        ctx.voice_state.loop = not ctx.voice_state.loop
-        await ctx.message.add_reaction('✅')
-
     @commands.command(name='play')
-    async def _play(self, ctx: commands.Context, *, search: str):
+    async def _play(self, ctx: commands.Context):
         """Plays a song.
 
         If there are songs in the queue, this will be queued until the
@@ -478,7 +440,9 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             try:
-                source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop)
+                this_song = random.choice(yt_links)
+                source = await YTDLSource.create_source(ctx, this_song, loop=self.bot.loop)
+
             except YTDLError as e:
                 await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
             else:

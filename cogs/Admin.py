@@ -17,7 +17,11 @@ class Admin(commands.Cog):
             mgs.append(x)
         await ctx.message.channel.delete_messages(mgs)
         await ctx.send(f"I deleted {number} messages in this channel",delete_after=4)
-
+    # 
+    # async def bump_server(self,ctx):
+    #     channel_t = ctx.message.get
+    #     await asyncio.sleep(10)
+    #     ctx.send("!d bump")
 
 
 def setup(bot):
