@@ -158,17 +158,16 @@ class Song:
         self.source = source
         self.requester = source.requester
 
-    def create_embed(self):
-        embed = (discord.Embed(title='Now playing',
-                               description='```css\n{0.source.title}\n```'.format(self),
-                               color=discord.Color.blurple())
-                 .add_field(name='Duration', value=self.source.duration)
-                 .add_field(name='Requested by', value=self.requester.mention)
-                 .add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
-                 .add_field(name='URL', value='[Click]({0.source.url})'.format(self))
-                 .set_thumbnail(url=self.source.thumbnail))
-        # print(f"Now playing -> [{source.title}] uploaded by [{source.uploader}]")
-        return embed
+    # def create_embed(self):
+    #     embed = (discord.Embed(title='Now playing',
+    #                            description='```css\n{0.source.title}\n```'.format(self),
+    #                            color=discord.Color.blurple())
+    #              .add_field(name='Duration', value=self.source.duration)
+    #              .add_field(name='Requested by', value=self.requester.mention)
+    #              .add_field(name='Uploader', value='[{0.source.uploader}]({0.source.uploader_url})'.format(self))
+    #              .add_field(name='URL', value='[Click]({0.source.url})'.format(self))
+    #              .set_thumbnail(url=self.source.thumbnail))
+    #     return embed
 
 
 class SongQueue(asyncio.Queue):
@@ -247,7 +246,7 @@ class VoiceState:
 
             self.current.source.volume = self._volume
             self.voice.play(self.current.source, after=self.play_next_song)
-            await self.current.source.channel.send(embed=self.current.create_embed())
+            # await self.current.source.channel.send(embed=self.current.create_embed())
 
             await self.next.wait()
 
@@ -409,9 +408,10 @@ class Music(commands.Cog):
         for i, song in enumerate(ctx.voice_state.songs[start:end], start=start):
             queue += '`{0}.` [**{1.source.title}**]({1.source.url})\n'.format(i + 1, song)
 
-        embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(ctx.voice_state.songs), queue))
-                 .set_footer(text='Viewing page {}/{}'.format(page, pages)))
-        await ctx.send(embed=embed)
+        # embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(ctx.voice_state.songs), queue))
+                 # .set_footer(text='Viewing page {}/{}'.format(page, pages)))
+        # await ctx.send(embed=embed)
+        await ctx.send([x for x in queue])
 
 
     @commands.command(name='remove')
@@ -440,7 +440,7 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             try:
-                this_song = random.choice(yt_links)
+                this_song = str(random.choice(yt_links))
                 source = await YTDLSource.create_source(ctx, this_song, loop=self.bot.loop)
 
             except YTDLError as e:
