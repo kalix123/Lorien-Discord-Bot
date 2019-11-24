@@ -11,8 +11,7 @@ class Reaction(commands.Cog):
         self.bot = bot
         self.images = {}
         self.emoji = {
-            "thumbsup": "👍",
-            "x": '❌'
+            "thumbsup": "👍"
         }
 
     @commands.Cog.listener()
@@ -23,7 +22,7 @@ class Reaction(commands.Cog):
             image_id = str(image_msg.id)
             for choice in self.emoji:
                 react_emoji = self.emoji[choice]
-                self.images[image_id] = self.images.get(image_id, []) + [react_emoji]
+                # self.images[image_id] = self.images.get(image_id, []) + [react_emoji]
                 await msg.add_reaction(emoji=react_emoji)
 
 
