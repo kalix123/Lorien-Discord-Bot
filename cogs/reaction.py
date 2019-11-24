@@ -11,21 +11,21 @@ class Reaction(commands.Cog):
         self.bot = bot
         self.images = {}
         self.emoji = {
-            "0": '\u0001f44d',
-            "1": "1\u20e3"
+            "thumbsup": "👍",
+            "x": '❌'
         }
+
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
-        msg = reaction.message
-        message_id = str(msg.id)
-        if user.bot:
-            return
-    @commands.Cog.listener()
-    async def on_message(self,message):
-        if message.attachments:
-            # react_emoji = self.bot.get_emoji("647509460507688971")
-            await message.add_reaction(emoji="\N{GLOBE WITH MERIDIANS}")
-            await message.add_reaction(emoji="U+20E3")
+    async def on_message(self,msg):
+        if msg.attachments:
+            print(self.images)
+            image_msg = msg
+            image_id = str(image_msg.id)
+            for choice in self.emoji:
+                react_emoji = self.emoji[choice]
+                self.images[image_id] = self.images.get(image_id, []) + [react_emoji]
+                await msg.add_reaction(emoji=react_emoji)
+
 
 
 def setup(bot):
