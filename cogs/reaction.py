@@ -29,7 +29,7 @@ class Reaction(commands.Cog):
             self.images[message_id]["thumbsup"] += 1
         elif reaction.emoji == self.emoji["x"]:
             self.images[message_id]["x"] += 1
-        if (self.images[message_id]["x"] >= 1) and (self.images[message_id]["x"] > self.images[message_id]["thumbsup"]):
+        if (self.images[message_id]["x"] >= 3) and (self.images[message_id]["x"] > self.images[message_id]["thumbsup"]):
             await msg.delete()
         # print(f"------------\nthumbsup: {self.images[message_id]['thumbsup']}\nx: {self.images[message_id]['x']}\n------------")
     @commands.Cog.listener()
