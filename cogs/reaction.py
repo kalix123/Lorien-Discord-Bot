@@ -14,42 +14,40 @@ class Reaction(commands.Cog):
             "thumbsup": "👍",
             "x": "❌"
         }
-        self.up_amount = 0
-        self.down_amount = 0
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         msg = reaction.message
         message_id = str(msg.id)
         # print(reaction)
-        if user.bot:
-            return
-        if reaction.emoji == self.emoji["thumbsup"]:
-            print("going up")
-            self.images[message_id]["thumbsup"] += 1
-        elif reaction.emoji == self.emoji["x"]:
-            self.images[message_id]["x"] += 1
-        if (self.images[message_id]["x"] >= 3) and (self.images[message_id]["x"] > self.images[message_id]["thumbsup"]):
-            await msg.delete()
+        if msg.attachments:
+            if user.bot:
+                return
+            if reaction.emoji == self.emoji["thumbsup"]:
+                print("going up")
+                self.images[message_id]["thumbsup"] += 1
+            elif reaction.emoji == self.emoji["x"]:
+                self.images[message_id]["x"] += 1
+            if (self.images[message_id]["x"] >= 3) and (self.images[message_id]["x"] > self.images[message_id]["thumbsup"]):
+                await msg.delete()
         # print(f"------------\nthumbsup: {self.images[message_id]['thumbsup']}\nx: {self.images[message_id]['x']}\n------------")
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
         msg = reaction.message
         message_id = str(msg.id)
-        if user.bot:
-            return
-        if reaction.emoji == self.emoji["thumbsup"]:
-            self.images[message_id]["thumbsup"] -= 1
-        elif reaction.emoji == self.emoji["x"]:
-            self.images[message_id]["x"] -= 1
+        if msg.attachments:
+            if user.bot:
+                return
+            if reaction.emoji == self.emoji["thumbsup"]:
+                self.images[message_id]["thumbsup"] -= 1
+            elif reaction.emoji == self.emoji["x"]:
+                self.images[message_id]["x"] -= 1
 
         # print(f"------------\nthumbsup: {self.images[message_id]['thumbsup']}\nx: {self.images[message_id]['x']}\n------------")
 
     @commands.Cog.listener()
     async def on_message(self,msg):
         if msg.attachments:
-            self.down_amount = 0
-            self.up_amount = 0
             image_msg = msg
             image_id = str(image_msg.id)
             for choice in self.emoji:
