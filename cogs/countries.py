@@ -24,12 +24,22 @@ class Countries(commands.Cog):
                     self.full_message = self.full_message + country + ": " + key + "\n"
 
         self.countries = []
+        self.active_post = 0
+        self.announcment_channel = None
 
     @commands.command(name='send', hidden=True)
     @commands.has_permissions(manage_guild=True)
     async def send(self,message, channel_id : int):
-        announcment_channel = self.bot.get_channel(channel_id)
-        await announcment_channel.send(self.full_message)
+        self.announcment_channel = self.bot.get_channel(channel_id)
+        await self.announcment_channel.send(self.full_message)
+
+    @commands.command(name='clear_countries', hidden=True)
+    @commands.has_permissions(manage_guild=True)
+    async def clear_countries(self,message):
+        with open('cogs/active_countries.txt', 'w') as file:
+            file.write('')
+        self.countries = []
+        await message.send("all countries cleared from list and text file")
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
