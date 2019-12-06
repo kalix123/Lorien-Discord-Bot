@@ -1,5 +1,5 @@
 # Lorien
-A discord bot for the **[People Things](discord.gg/wEcKyDu)** Discord Server
+A discord bot for the **[People Things](https://discordapp.com/invite/wEcKyDu)** Discord Server
 
 ##Setup
 This bot uses docker-compose.
